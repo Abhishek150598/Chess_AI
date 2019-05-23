@@ -30,6 +30,7 @@ boardY = 40
 black = (0, 0, 0)
 green = (13, 99, 5)
 white = (226, 195, 147)
+red = (204 , 28, 12)
 bg = (255, 255, 255)
 d = 15	#Distance between board and board label
 l = list(string.ascii_uppercase[0:8]) 	#Uppercase alphabet list for board labelling
@@ -72,11 +73,21 @@ def draw_board():
 		textRect.center = (boardX+(2*x-1)*cell_width//2, boardY+board_height+d) 
 		gameDisplay.blit(text, textRect)
 
+#FUNCTION WHICH MAPS THE INDEX NO OF A CELL TO ITS CORRESPONDING (TOP LEFT) SCREEN COORDINATE
+def index_to_coordinate(x,y):
+	pieceX = boardX + x*cell_width
+	pieceY = boardY + y*cell_height
+	return pieceX, pieceY
+
+#FUNCTION WHICH CONVERTS THE SCREEN COORDINATES TO ITS CORRESPONDING INDEX NUMBER
+def coordinate_to_index(pieceX,pieceY):
+	x = (pieceX-boardX)//cell_width
+	y = (pieceY-boardY)//cell_height
+	return x,y
 
 #FUNCTION WHICH DRAWS A CHESS PIECE ON THE BOARD
 def draw_piece(piece_code, x, y):
-	pieceX = boardX + x*cell_width
-	pieceY = boardY + y*cell_height
+	pieceX, pieceY = index_to_coordinate(x,y)
 	gameDisplay.blit(piece_img[piece_code], (pieceX, pieceY))
 
 #FUNCTION TO SET ALL THE CHESS PIECES ON THE BOARD
@@ -101,19 +112,33 @@ def set_pieces():
 		draw_piece(5, i, 1)
 		draw_piece(11, i, 6)
 
+#FUNCTION THAT HIGHLIGHTS A CELL
+def highlight_cell(x, y, color):
+	pieceX,pieceY = index_to_coordinate(x,y)
+#	print(pieceX, pieceY)
+	pygame.draw.rect(gameDisplay, red, [pieceX, pieceY, cell_width, cell_height])
+
+#FUNCTION THAT SHOWS POSSIBLE MOVES FOR A CHESS PIECE
+def show_moves(mouse):
+	x,y = coordinate_to_index(mouse[0], mouse[1])
+	highlight_cell(x,y,red)
+	
 # GAME LOOP
 def game_loop():
 
-	gameExit=False
+	gameExit = False
 	while not gameExit:
 		for event in pygame.event.get():
 			if event.type==pygame.QUIT:
 				pygame.quit()
 				quit()
+
 		gameDisplay.fill(bg)
 		draw_board()
 		set_pieces()
+		mouse = pygame.mouse.get_pos()
+		if (boardX < mouse[0] < boardX+board_width) and (boardY < mouse[1] < boardY+board_height):
+			show_moves(mouse)
 		pygame.display.update()
-
 
 game_loop()
