@@ -67,15 +67,15 @@ def get_moves(x, y):
     
 	if p == 'p':
 		if turn=='b':
-			if piece(x-1,y)=='0':
-				l.append((x-1,y))
-				if x==6 and piece(x-2,y)=='0':
-					l.append((x-2,y))
-		elif turn=='w':
 			if piece(x+1,y)=='0':
 				l.append((x+1,y))
 				if x==1 and piece(x+2,y)=='0':
 					l.append((x+2,y))
+		elif turn=='w':
+			if piece(x-1,y)=='0':
+				l.append((x-1,y))
+				if x==6 and piece(x-2,y)=='0':
+					l.append((x-2,y))
 	
 	elif piece_data[p]['single_move']==True:
 		for dir in piece_data[p]['dir']:
@@ -85,13 +85,15 @@ def get_moves(x, y):
 				l.append((i, j))
 
 	elif piece_data[p]['single_move']==False:
-		i = x
-		j = y
 		for dir in piece_data[p]['dir']:
-			while in_board(i,j):
+			i = x
+			j = y
+			while True:
 				i = i + dir[0]
 				j = j + dir[1]
-				if  piece(i,j)=='0':
+				if not in_board(i,j):
+					break
+				elif  piece(i,j)=='0':
 					l.append((i, j))
 				elif color(i,j)==wait:
 					l.append((i, j))
